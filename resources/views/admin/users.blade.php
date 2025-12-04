@@ -1,6 +1,4 @@
-@extends('admin.layout')
-
-@section('content')
+<x-app-layout>
 <div class="mb-8">
     <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
     <p class="text-gray-600">Manage all system users</p>
@@ -10,7 +8,7 @@
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex justify-between items-center">
             <h3 class="text-lg font-medium text-gray-900">All Users</h3>
-            <a href="{{ route('register') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <a href="{{ route('admin.users.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 Add New User
             </a>
         </div>
@@ -51,8 +49,11 @@
                         {{ $user->created_at->format('M d, Y') }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
+                        <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach
@@ -64,4 +65,4 @@
         {{ $users->links() }}
     </div>
 </div>
-@endsection
+</x-app-layout>
