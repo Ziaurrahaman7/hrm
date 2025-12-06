@@ -56,35 +56,51 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        const originalTableBody = $('#employeeTableBody').html();
+        
         $('#departmentFilter').change(function() {
             const departmentId = $(this).val();
+            
+            // Show loading
+            $('#employeeTableBody').html('<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Loading...</td></tr>');
+            
             if (departmentId) {
-                $.get(`/employees/filter/${departmentId}`, function(employees) {
-                    let html = '';
-                    employees.forEach(employee => {
-                        let skills = employee.skills.map(skill => 
-                            `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">${skill.name}</span>`
-                        ).join('');
-                        
-                        html += `<tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${employee.first_name} ${employee.last_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${employee.email}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${employee.department.name}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">${skills}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="/employees/${employee.id}" class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
-                                <a href="/employees/${employee.id}/edit" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                <form action="/employees/${employee.id}" method="POST" class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
-                            </td>
-                        </tr>`;
+                $.get(`/employees/filter/${departmentId}`)
+                    .done(function(employees) {
+                        let html = '';
+                        if (employees.length === 0) {
+                            html = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No employees found in this department.</td></tr>';
+                        } else {
+                            employees.forEach(employee => {
+                                let skills = employee.skills.map(skill => 
+                                    `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">${skill.name}</span>`
+                                ).join('');
+                                
+                                html += `<tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${employee.first_name} ${employee.last_name}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${employee.email}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${employee.department.name}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">${skills}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="/employees/${employee.id}" class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
+                                        <a href="/employees/${employee.id}/edit" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                        <form action="/employees/${employee.id}" method="POST" class="inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>`;
+                            });
+                        }
+                        $('#employeeTableBody').html(html);
+                    })
+                    .fail(function() {
+                        $('#employeeTableBody').html('<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">Error loading employees.</td></tr>');
                     });
-                    $('#employeeTableBody').html(html);
-                });
             } else {
-                location.reload();
+                // Show all employees (restore original)
+                $('#employeeTableBody').html(originalTableBody);
             }
         });
     </script>

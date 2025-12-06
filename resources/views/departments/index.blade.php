@@ -7,12 +7,14 @@
         <!-- Add Department Form -->
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Department</h3>
-            <form action="{{ route('departments.store') }}" method="POST" class="flex gap-4">
+            <form action="{{ route('departments.store') }}" method="POST" class="space-y-3">
                 @csrf
-                <input type="text" name="name" placeholder="Department Name" class="flex-1 border border-gray-300 rounded-md px-3 py-2" required>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add Department</button>
+                <div class="flex gap-4">
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Department Name" class="flex-1 border border-gray-300 rounded-md px-3 py-2" required>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add Department</button>
+                </div>
+                @error('name')<div class="text-red-500 text-sm">{{ $message }}</div>@enderror
             </form>
-            @error('name')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
         </div>
 
         <!-- Departments List -->

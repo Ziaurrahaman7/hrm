@@ -48,6 +48,9 @@
                 </div>
                 <button type="button" id="addSkillBtn" class="mt-2 text-blue-600 hover:text-blue-800 text-sm">+ Add Custom Skill</button>
                 <div id="customSkills"></div>
+                @error('skills')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
+                @error('custom_skills')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
+                @error('custom_skills.*')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
             </div>
 
             <div class="flex justify-end space-x-3">
